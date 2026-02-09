@@ -1,0 +1,30 @@
+# Maven
+/target/
+
+# TestNG & Allure
+/test-output/
+/allure-results/
+/allure-report/
+
+# Logs
+/logs/
+*.log
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Drivers
+chromedriver*
+geckodriver*
+msedgedriver*
