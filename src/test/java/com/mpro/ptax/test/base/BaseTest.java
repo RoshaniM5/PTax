@@ -3,10 +3,12 @@ package com.mpro.ptax.test.base;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
 
 import com.mpro.ptax.base.BasePage;
-import com.pro.ptax.driver.DriverManager;
+import com.mpro.ptax.driver.DriverManager;
 
 public class BaseTest {
 
@@ -14,7 +16,7 @@ public class BaseTest {
     protected WebDriver driver;
     protected BasePage basepage;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() {
     	log=LogManager.getLogger(this.getClass());
         DriverManager.initDriver();
@@ -23,9 +25,10 @@ public class BaseTest {
         basepage= new BasePage();
     }
 
-//    @AfterMethod
+//    @AfterClass
 //    public void tearDown() {
 //        DriverManager.quitDriver();
 //    }
-}
+    
+   }
 

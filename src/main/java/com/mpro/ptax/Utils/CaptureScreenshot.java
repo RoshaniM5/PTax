@@ -1,31 +1,51 @@
 package com.mpro.ptax.Utils;
 
-import java.time.Duration;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import com.mpro.ptax.base.BasePage;
 
-import com.pro.ptax.driver.DriverManager;
+import org.apache.commons.io.FileUtils;
 
-public class CaptureScreenshot {
-	
-	public static String captureMessage(By locator, int timeoutSeconds) {
+public class CaptureScreenshot extends BasePage{
+
+    public static void takeScreenshot() {
+
+        if (driver == null) {
+            System.out.println("Driver is null, cannot take screenshot");
+            return;
+        }
 
         try {
-            WebDriverWait wait =
-                    new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(timeoutSeconds));
+            // 📅 Timestamp for unique file name
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
-            WebElement element =
-                    wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+            // 📁 Folder path
+            String folderPath = System.getProperty("user.dir") + "/screenshots/";
 
-            return element.getText();
+            // Create folder if not exists
+            File folder = new File(folderPath);
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
 
-        } catch (TimeoutException e) {
-            return null;
+            // 📸 Take screenshot
+            File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+
+            // 📂 Destination file
+            File dest = new File(folderPath + "FailedTest_" + timeStamp + ".png");
+
+            FileUtils.copyFile(src, dest);
+
+            System.out.println("Screenshot saved at: " + dest.getAbsolutePath());
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
-

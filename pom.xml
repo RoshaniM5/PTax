@@ -81,6 +81,7 @@
 			<artifactId>log4j-core</artifactId>
 			<version>2.22.1</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -100,14 +101,16 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.15.1</version>
 		</dependency>
-
-		<!-- ✅ Allure TestNG -->
-		<dependency>
-			<groupId>io.qameta.allure</groupId>
-			<artifactId>allure-testng</artifactId>
-			<version>2.29.1</version>
-		</dependency>
 		
+	<!-- Source: https://mvnrepository.com/artifact/io.qameta.allure/allure-testng -->
+
+    <!-- Allure TestNG -->
+    <dependency>
+        <groupId>io.qameta.allure</groupId>
+        <artifactId>allure-testng</artifactId>
+        <version>2.24.0</version>
+    </dependency>
+
    <!-- SLF4J API -->
     <dependency>
         <groupId>org.slf4j</groupId>
@@ -122,42 +125,58 @@
         <version>1.5.6</version>
     </dependency>
 
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-slf4j-impl</artifactId>
-    <version>2.23.1</version>
-</dependency>
+	<dependency>
+    	<groupId>org.apache.logging.log4j</groupId>
+    	<artifactId>log4j-slf4j-impl</artifactId>
+    	<version>2.23.1</version>
+	</dependency>
 
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-core</artifactId>
-    <version>2.22.1</version>
-</dependency>
+	<dependency>
+    	<groupId>org.apache.logging.log4j</groupId>
+    	<artifactId>log4j-core</artifactId>
+    	<version>2.22.1</version>
+	</dependency>
 
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-layout-template-json</artifactId>
-    <version>2.22.1</version>
-</dependency>
+	<dependency>
+    	<groupId>org.apache.logging.log4j</groupId>
+    	<artifactId>log4j-layout-template-json</artifactId>
+    	<version>2.22.1</version>
+	</dependency>
 
-</dependencies>
+	<dependency>
+    	<groupId>org.seleniumhq.selenium</groupId>
+    	<artifactId>selenium-devtools-v123</artifactId>
+    	<version>4.20.0</version>
+	</dependency>
+
+	<dependency>
+    	<groupId>org.aspectj</groupId>
+    	<artifactId>aspectjweaver</artifactId>
+    	<version>1.9.21</version>
+	</dependency>
+
+	</dependencies>
 
 <build>
     <plugins>
-
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.2.5</version>
-            <configuration>
-                <suiteXmlFiles>
-                    <suiteXmlFile>testng.xml</suiteXmlFile>
-                </suiteXmlFiles>
-            </configuration>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <version>3.2.5</version>
+      <configuration>
+        <argLine>
+          -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/1.9.21/aspectjweaver-1.9.21.jar"
+        </argLine>
+      </configuration>
         </plugin>
 
+    <plugin>
+      <groupId>io.qameta.allure</groupId>
+      <artifactId>allure-maven</artifactId>
+      <version>2.12.0</version>
+    </plugin>
     </plugins>
-</build>
+  </build>
 
 </project>
 

@@ -7,9 +7,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -17,13 +20,14 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.pro.ptax.driver.DriverManager;
+import com.mpro.ptax.driver.DriverManager;
 
 public class BasePage {
 
 	protected final Logger logger = LogManager.getLogger(this.getClass());
    
-	protected WebDriver driver; protected WebDriverWait wait;
+	protected static WebDriver driver; 
+	protected WebDriverWait wait;
 	
 	 public BasePage() {
 	        this.driver = DriverManager.getDriver();
@@ -43,14 +47,38 @@ public class BasePage {
 
 	    public void scrollDown() {
 	        ((JavascriptExecutor) getDriver())
-	                .executeScript("window.scrollBy(0,2000)");
+	                .executeScript("window.scrollBy(0,1500)");
 	    }
 
 	    public void scrollUp() {
 	        ((JavascriptExecutor) getDriver())
-	                .executeScript("window.scrollBy(0,-500)");
+	                .executeScript("window.scrollBy(5000)");
+	    }
+	    
+	    public void scrollToElementInsideModal(By locator) {
+	        WebElement element = driver.findElement(locator);
+
+	        ((JavascriptExecutor) driver)
+	            .executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
 	    }
 
+	    /* ---------------- Loader ---------------- */
+	    
+	    public void waitForLoaderToDisappear() {
+	    	By loader = By.xpath("//div[contains(@class,'waiting-box')]");
+	        try {
+	            getWait().until(ExpectedConditions.invisibilityOfElementLocated(loader));
+	        } catch (Exception e) {
+	            System.out.println("Loader not visible or already disappeared.");
+	        }
+	    }
+	    
+	    public void waitForVisibility(By locator) {
+
+	        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+	        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+
+	    }
 	    /* ---------------- ZOOM ---------------- */
 
 	    public void zoomOut(int percentage) {
@@ -66,13 +94,68 @@ public class BasePage {
 	    /* ---------------- ALERT ---------------- */
 
 	    public void acceptAlert() {
-	        Alert alert = getWait().until(ExpectedConditions.alertIsPresent());
-	        alert.accept();
+	    	 try {
+	    	        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+	    	        wait.until(ExpectedConditions.alertIsPresent());
+	    	        driver.switchTo().alert().accept();
+	    	    } catch (TimeoutException e) {
+	    	        logger.info("No alert present.");
+	    	    }
 	    }
 
+	    
+	    public String getAlertTextAndAccept() {
+
+
+	        //Try JS Alert
+	        try {
+	            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+	            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+	            String text = alert.getText();
+	            alert.accept();
+	            logger.info("Captured JS Alert: " + text);
+	            return text.trim();
+	        } catch (Exception e) {
+	            logger.info("No JS alert found. Checking DOM popup...");
+	        }
+
+	        //Try DOM Popup
+	        try {
+	            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+	            WebElement successMsg = wait.until(
+	                    ExpectedConditions.visibilityOfElementLocated(
+	                            By.xpath("//*[contains(text(),'Successfully')]")
+	                    )
+	            );
+
+	            String text = successMsg.getText();
+	            logger.info("Captured DOM message: " + text);
+	            return text.trim();
+
+	        } catch (Exception e) {
+	            logger.info("No success message found in DOM.");
+	        }
+
+	        return "";
+	    }
+	    
+	    public void handleAlertIfPresent() {
+	        try {
+	            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+	            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+	            
+	            System.out.println("Alert found: " + alert.getText());
+	            alert.accept(); // or alert.dismiss()
+
+	        } catch (TimeoutException e) {
+	            System.out.println("No alert present.");
+	        }
+	    }
 	    /* ---------------- CLICK METHODS ---------------- */
 
 	    public void click(By locator) {
+	    	waitForLoaderToDisappear();
 	        getWait().until(ExpectedConditions.elementToBeClickable(locator)).click();
 	    }
 
@@ -91,6 +174,21 @@ public class BasePage {
 	        }
 	    }
 
+	    public void click1(By locator) {
+
+	        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+	        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+
+	        ((JavascriptExecutor) driver)
+	                .executeScript("arguments[0].scrollIntoView(true);", element);
+
+	        try {
+	            element.click();
+	        } catch (ElementClickInterceptedException e) {
+	            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+	        }
+	    }
+	    
 	    /* ---------------- INPUT ---------------- */
 
 	    protected void input(By locator, String value) {
@@ -136,13 +234,12 @@ public class BasePage {
 
 	    public void selectLatestInward() {
 
-	    	WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(20));
+	    	WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(30));
 
-	        By viewBtnLocator = By.xpath("//table//button[normalize-space()='View']");
+	        By viewBtnLocator = By.xpath("(//table//button[normalize-space()='View'])[last()]");
 	        
 	    	List<WebElement> viewButtons = wait.until(
-	    	        ExpectedConditions.numberOfElementsToBeMoreThan(viewBtnLocator, 0)
-	    	    );
+	    	        ExpectedConditions.numberOfElementsToBeMoreThan(viewBtnLocator, 0));
 
 	    	    logger.info("Total View buttons found: " + viewButtons.size());
 
@@ -151,15 +248,63 @@ public class BasePage {
 	    }
 
 	    /* ---------------- DROPDOWN ---------------- */
+	    
+	    public void selectFromDropdown(By locator, String value) {
 
-	    protected void selectFromDropdown(By dropdown, String visibleText) {
-	        WebElement dd = getWait()
-	                .until(ExpectedConditions.elementToBeClickable(dropdown));
-	        new Select(dd).selectByVisibleText(visibleText);
+	        WebDriverWait wait = getWait();
+
+	        wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+
+	        for (int i = 0; i < 3; i++) {
+	            try {
+	                WebElement element = wait.until(
+	                        ExpectedConditions.elementToBeClickable(locator));
+
+	                Select select = new Select(element);
+	                select.selectByVisibleText(value.trim());
+	                break;
+
+	            } catch (StaleElementReferenceException e) {
+	                if (i == 2) throw e; // rethrow after retry
+	            }
+	        }
 	    }
+
+	    public void waitForDropdownToPopulate(By locator) {
+
+	        WebDriverWait wait = getWait();
+
+	        wait.until(driver -> {
+	            WebElement element = driver.findElement(locator);
+	            Select select = new Select(element);
+	            return select.getOptions().size() > 1;
+	        });
+	    }
+//	    public void selectFromDropdown(By dropdown, String value) {
+//	    	 WebElement element = 
+//	    		getWait().until(ExpectedConditions.elementToBeClickable(dropdown));
+//	    	    getWait().until(ExpectedConditions.visibilityOfElementLocated(dropdown));
+//
+////	    	    getWait().until(d -> new Select(element).getOptions().size() > 1);
+//
+//	    	    Select select = new Select(element);
+//	    	   
+//	    	    for (WebElement option : select.getOptions()) {
+//	    	       
+//	    	    }
+//	    	    
+//	    	    
+//	    	    try {
+//	    	        // First try exact visible text
+//	    	        select.selectByVisibleText(value.trim());
+//	    	    } catch (StaleElementReferenceException  e) {
+//	    	        // If fails, try selecting by value (for numeric cases)
+//	    	        select.selectByValue(value.trim());
+//	    	    }
+//	    }
 	    
 	    /* ---------------- INPUTTEXT ---------------- */
-	    protected void Input(By locator, String value) { 
+	    public void Input(By locator, String value) { 
 	    	WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(locator)); 
 	    
 	    	       wait.until(ExpectedConditions.elementToBeClickable(locator)); 
@@ -173,9 +318,49 @@ public class BasePage {
 	    	Input(fileInput, filepath); 
 	    }
 	    
+	    /* ---------------- WaitForNumberofWindows ---------------- */
+	    public void waitForNumberOfWindows(int expectedWindows) {
+	        new WebDriverWait(driver, Duration.ofSeconds(10))
+	                .until(driver -> driver.getWindowHandles().size() >= expectedWindows);
+	    }
+	    
 	    /* ---------------- CLICKWHENVISIBLE ---------------- */
 	    public void clickWhenVisible(By locator) { 
 	    	wait.until(ExpectedConditions.visibilityOfElementLocated(locator)); 
 	    	wait.until(ExpectedConditions.elementToBeClickable(locator)).click(); 
-	    	}
-	}
+	    }
+	    
+	    /* ---------------- WINDOWHANDLES ---------------- */
+	    
+	    public void handleReportandReturn() throws InterruptedException {
+	    	 // Store parent window
+	        String parent = driver.getWindowHandle();
+	        
+	        
+	        // Get all windows
+	        for (String window : driver.getWindowHandles()) {
+
+	            // Switch to child window
+	            if (!window.equals(parent)) {
+	                driver.switchTo().window(window);
+	                Thread.sleep(2000);	        // Wait 3 seconds to see report (optional)
+	                driver.close();				
+	    	        // Close report tab
+	            }
+	        }
+	        // Switch back to parent
+	        driver.switchTo().window(parent);
+	    }
+	    	
+	
+	    public String getAlertMessage() {
+
+	        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+	        Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+
+	        String message = alert.getText();
+	        alert.accept();
+
+	        return message;
+	    }
+}

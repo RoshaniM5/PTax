@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="PTax Suite" parallel="tests" thread-count="2">
 
-   
-   
-    <test name="Inward + AAC Flow">
-        <classes>
-            <class name="com.mpro.ptax.test.flow.InwardFlowTest"/>
-            <class name="com.mpro.ptax.test.flow.AacLoginTest"/>
-        </classes>
-    </test>
-              
-    </suite>
-    
-
-
+<suite name="Suite">
+<listeners>
+<listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+<listener class-name="com.mpro.ptax.test.listeners.TestListener"/>
+</listeners>
+ 
+  <test thread-count="1" name="Test">
+    <classes>
+      <class name="com.mpro.ptax.projectFlow.NewAssessmentFlowTest"/>
+    </classes>
+  </test> <!-- Test -->
+</suite> <!-- Suite -->

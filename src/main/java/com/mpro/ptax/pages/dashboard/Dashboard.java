@@ -11,7 +11,7 @@ public class Dashboard extends BasePage{
 	GlobalButtons globalbuttons = new GlobalButtons();
 	
 	private By assessmentMenu 			= By.xpath("//span[text()='Assessment']/ancestor::a"); 
-	private By Inward 					= By.xpath("//a[contains(@ui-sref,'manualInward')]");
+	private By Inward 					= By.xpath("//a[normalize-space()='Inward']");
 	private By logoutDropdown_Inward 	= By.xpath("//a[contains(normalize-space(.),'Sanjay Suresh Mirajkar')]");
 	private By close_popup				= By.xpath("//button[@id='btnCancels']");
 	
@@ -20,7 +20,7 @@ public class Dashboard extends BasePage{
 	
 	public void openAssessment() {
 		
-		click(assessmentMenu);	
+		clickWhenVisible(assessmentMenu);	
 	}
 	
 	public void openInward() throws InterruptedException {

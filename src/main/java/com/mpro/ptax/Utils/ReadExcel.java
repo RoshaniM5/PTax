@@ -1,86 +1,111 @@
 package com.mpro.ptax.Utils;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+
+import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class ReadExcel {
+import com.mpro.ptax.model.WIFlat;
+import com.mpro.ptax.model.WiData;
+
+
+	public class ReadExcel{
+		
+		public static Iterator<WiData> getWIData() {
 	
-	 private Workbook workbook;
+			File file = new File(System.getProperty("user.dir")
+            + "/src/test/resources/WI Data.xlsx");
 
-	    public ReadExcel(String excelPath) throws IOException {
-	    	workbook = WorkbookFactory.create(new FileInputStream(excelPath));
-	    }																																						
-	   
+    List<WiData> wiList = new ArrayList<>();
 
-	    public String getCellData(String sheetName, int rowNum, int colNum) {
-	        Sheet sheet = workbook.getSheet(sheetName);
-	        if (sheet == null) return "";
-	        Row row = sheet.getRow(rowNum);
-	        if (row == null) return "";
-	        Cell cell = row.getCell(colNum);
-	        if (cell == null) return "";
-	        return new DataFormatter().formatCellValue(cell);
+    DataFormatter formatter = new DataFormatter();
+    
+    try (XSSFWorkbook workbook = new XSSFWorkbook(file)) {
+
+        XSSFSheet sheet = workbook.getSheet("Sheet1");
+        Iterator<Row> rows = sheet.iterator();
+        rows.next(); // skip header
+
+        while (rows.hasNext()) {
+
+            Row row = rows.next();
+
+            WiData data = new WiData(
+            		 formatter.formatCellValue(row.getCell(0)),
+                     formatter.formatCellValue(row.getCell(1)),
+                     formatter.formatCellValue(row.getCell(2)),
+                     formatter.formatCellValue(row.getCell(3)),
+                     formatter.formatCellValue(row.getCell(4)),
+                     formatter.formatCellValue(row.getCell(5)),
+                     formatter.formatCellValue(row.getCell(6)),
+                     formatter.formatCellValue(row.getCell(7)),
+                     formatter.formatCellValue(row.getCell(8)),
+                     formatter.formatCellValue(row.getCell(9))            );
+
+            wiList.add(data);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return wiList.iterator();
+ }
+	
+		
+		public static Iterator<WIFlat> getFlatData() {
+
+			File file = new File(System.getProperty("user.dir")
+		            + "/src/test/resources/WI New Flat Details.xlsx");
+
+		    List<WIFlat> wiList1 = new ArrayList<>();
+		    DataFormatter formatter = new DataFormatter();
+		    
+		    
+		    try (XSSFWorkbook workbook = new XSSFWorkbook(file)) {
+
+		        XSSFSheet sheet = workbook.getSheet("Sheet1");
+		        Iterator<Row> rows = sheet.iterator();
+		        rows.next(); // skip header
+
+		        while (rows.hasNext()) {
+
+		            Row row = rows.next();
+
+	            WIFlat data1 = new WIFlat(
+
+	            		    formatter.formatCellValue(row.getCell(0)),
+	                        formatter.formatCellValue(row.getCell(1)),
+	                        formatter.formatCellValue(row.getCell(2)),
+	                        formatter.formatCellValue(row.getCell(3)),
+	                        formatter.formatCellValue(row.getCell(4)),
+	                        formatter.formatCellValue(row.getCell(5)),
+	                        formatter.formatCellValue(row.getCell(6)),
+	                        formatter.formatCellValue(row.getCell(7)),
+	                        formatter.formatCellValue(row.getCell(8)),
+	                        formatter.formatCellValue(row.getCell(9)),
+	                        formatter.formatCellValue(row.getCell(10)),
+	                        formatter.formatCellValue(row.getCell(11)),
+	                        formatter.formatCellValue(row.getCell(12)),
+	                        formatter.formatCellValue(row.getCell(13))
+	                );
+
+	            wiList1.add(data1);
 	    }
 
-	    public int getRowCount(String sheetName) {
-	        Sheet sheet = workbook.getSheet(sheetName);
-	        return (sheet != null) ? sheet.getPhysicalNumberOfRows() : 0;
-	    }
-
-	    public int getColumnCount(String sheetName) {
-	        Sheet sheet = workbook.getSheet(sheetName);
-	        Row row = (sheet != null) ? sheet.getRow(0) : null;
-	        return (row != null) ? row.getPhysicalNumberOfCells() : 0;
-	    }
-
-	    public void closeWorkbook() throws IOException {
-	        if (workbook != null) workbook.close();
-	    }
-	    
-	    // Method 4: Get all rows as List<Map<column, value>>
-	    public List<Map<String, String>> getData(String sheetName) {
-	        List<Map<String, String>> dataList = new ArrayList<>();
-	        Sheet sheet = workbook.getSheet(sheetName);
-	        if (sheet == null) return dataList;
-
-	        Row header = sheet.getRow(0);
-	        if (header == null) return dataList;
-
-	        int cols = header.getPhysicalNumberOfCells();
-	        DataFormatter formatter = new DataFormatter();
-
-	        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-	            Row row = sheet.getRow(i);
-	            if (row == null || isRowEmpty(row, formatter)) continue;
-
-	            Map<String, String> data = new LinkedHashMap<>();
-	            for (int j = 0; j < cols; j++) {
-	                String key = formatter.formatCellValue(header.getCell(j)).trim();
-	                String value = formatter.formatCellValue(row.getCell(j)).trim();
-	                data.put(key, value);
-	            }
-	            dataList.add(data);
-	        }
-	        return dataList;
-	    }
-
-	    // Utility: Check if a row is empty
-	    private boolean isRowEmpty(Row row, DataFormatter formatter) {
-	        for (Cell cell : row) {
-	            if (!formatter.formatCellValue(cell).trim().isEmpty()) return false;
-	        }
-	        return true;
-	    
+	    } catch (Exception e) {
+	            e.printStackTrace();
 	}
+
+	      return wiList1.iterator();
+	 }
 }
+		
+	

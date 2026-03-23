@@ -12,8 +12,7 @@ public class CredentialUtil {
 			return ReadConfig.get("Inwardclerk.username");
 				
 		case Wi:
-			String activeWi = ReadConfig.get("W.active");
-			return ReadConfig.get(activeWi + ".username");
+			return ReadConfig.get("wi.username");
 			 
 		case Dysupdt:
 			return ReadConfig.get("Dysupdt.username");
