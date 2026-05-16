@@ -1,6 +1,12 @@
 package com.mpro.ptax.pages.dashboard;
 
+import java.time.Duration;
+
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.mpro.ptax.base.BasePage;
 import com.mpro.ptax.components.GlobalButtons;
@@ -19,18 +25,33 @@ public class Dashboard extends BasePage{
 	
 	
 	public void openAssessment() {
-		
+		waitForModalToDisappear();
 		clickWhenVisible(assessmentMenu);	
 	}
 	
-	public void openInward() throws InterruptedException {
-		
+	public void openInwardForm() throws InterruptedException {
+		waitForModalToDisappear();
 		clickWhenVisible(Inward);
 	}
 	
 	public void closePopup() {
-		
-		click(close_popup);
+	
+		 try {
+
+		        WebDriverWait wait =
+		                new WebDriverWait(getDriver(), Duration.ofSeconds(5));
+
+		        WebElement popup =
+		                wait.until(ExpectedConditions.presenceOfElementLocated(close_popup));
+
+		        if (popup.isDisplayed()) {
+		            popup.click();
+		        }
+
+		    } catch (TimeoutException e) {
+
+		        System.out.println("Popup not present");
+		    }
 	}
 	
 	public void Logout() {

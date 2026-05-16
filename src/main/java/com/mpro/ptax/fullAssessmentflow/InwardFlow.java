@@ -4,7 +4,7 @@ import com.mpro.ptax.Utils.CredentialUtil;
 import com.mpro.ptax.base.BasePage;
 import com.mpro.ptax.components.GlobalButtons;
 import com.mpro.ptax.enums.UserRole;
-import com.mpro.ptax.pageobject.Inwardclerk;
+import com.mpro.ptax.pageobject.Assessment.Inwardclerk;
 import com.mpro.ptax.pages.auth.Login;
 import com.mpro.ptax.pages.dashboard.Dashboard;
 
@@ -28,7 +28,7 @@ public class InwardFlow{
 	        globalbuttons.clickcrossIcon();
 	        
 	        dashboard.openAssessment();
-	        dashboard.openInward();
+	        dashboard.openInwardForm();
 	        inwardClerk.openInward();
 	        globalbuttons.clickSave();
 	        basepage.acceptAlert();

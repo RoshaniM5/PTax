@@ -4,7 +4,7 @@ import com.mpro.ptax.Utils.CredentialUtil;
 import com.mpro.ptax.base.BasePage;
 import com.mpro.ptax.components.GlobalButtons;
 import com.mpro.ptax.enums.UserRole;
-import com.mpro.ptax.pageobject.Aac1;
+import com.mpro.ptax.pageobject.Assessment.Aac1;
 import com.mpro.ptax.pages.auth.Login;
 
 public class Aac1Flow{
@@ -26,7 +26,7 @@ public class Aac1Flow{
         basepage.waitForLoaderToDisappear();
         globalbuttons.clickcrossIcon();
         basepage.scrollDown();
-        basepage.selectLatestInward();
+        basepage.selectLatestInwardO();
         aac1.openAac1();
 	}  
 

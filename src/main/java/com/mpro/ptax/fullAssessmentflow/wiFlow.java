@@ -5,7 +5,7 @@ import com.mpro.ptax.base.BasePage;
 import com.mpro.ptax.components.GlobalButtons;
 import com.mpro.ptax.enums.UserRole;
 import com.mpro.ptax.model.WiData;
-import com.mpro.ptax.pageobject.Wi;
+import com.mpro.ptax.pageobject.Assessment.Wi;
 import com.mpro.ptax.pages.auth.Login;
 
 
@@ -25,10 +25,26 @@ public class wiFlow {
 	    	loginflow.login(username, password);
 	        basepage.zoomOut(75);
 	        globalbuttons.clickcrossIcon();
-	        basepage.selectLatestInward();
+	        basepage.selectLatestInwardO();
 	        basepage.scrollUp();
 	        wi.fileWIfileDetails(data);
 	        wi.fileWIfileDetailsNew();
+	        
+	    }
+	    
+	    public void executeWorkflow(WiData data) throws Exception {
+
+	    	String username = CredentialUtil.getUsername(UserRole.Wi);
+	    	String password = CredentialUtil.getPassword();
+	    	
+	    	loginflow.openUrl();
+	    	loginflow.login(username, password);
+	        basepage.zoomOut(75);
+	        globalbuttons.clickcrossIcon();
+	        basepage.selectLatestInwardO();
+	        basepage.scrollUp();
+	        wi.fileWIfileDetails(data);
+	        wi.verifyMeterConnectionDetails();
 	        
 	    }
 	}

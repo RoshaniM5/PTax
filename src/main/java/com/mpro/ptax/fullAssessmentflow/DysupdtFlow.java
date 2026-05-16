@@ -4,7 +4,7 @@ import com.mpro.ptax.Utils.CredentialUtil;
 import com.mpro.ptax.base.BasePage;
 import com.mpro.ptax.components.GlobalButtons;
 import com.mpro.ptax.enums.UserRole;
-import com.mpro.ptax.pageobject.Dysupdt;
+import com.mpro.ptax.pageobject.Assessment.Dysupdt;
 import com.mpro.ptax.pages.auth.Login;
 
 public class DysupdtFlow{

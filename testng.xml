@@ -1,15 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 
-<suite name="Suite">
-<listeners>
-<listener class-name="io.qameta.allure.testng.AllureTestNg"/>
-<listener class-name="com.mpro.ptax.test.listeners.TestListener"/>
-</listeners>
+<!--<suite name="Suite">
+
+    <test name="Assessment Flow Test" thread-count="1">
+
+        <groups>
+            <run>
+                <include name="e2e"/>
+                <exclude name="Sanity"/>
+            </run>
+        </groups>
+
+        <classes>
+            <class name="com.mpro.ptax.projectFlow.NewAssessmentFlow1"/>
+        </classes>
+
+    </test>
+
+</suite>-->
+
+<suite name="Regression Suite" parallel="tests" thread-count="1">
  
-  <test thread-count="1" name="Test">
-    <classes>
-      <class name="com.mpro.ptax.projectFlow.NewAssessmentFlowTest"/>
-    </classes>
-  </test> <!-- Test -->
-</suite> <!-- Suite -->
+    <test name="Assessment Module">
+        <classes>
+        	<class name="com.mpro.ptax.projectFlow.NewAssessmentFlow1"/>
+            <class name="com.mpro.ptax.projectFlow.ReAssessmentFlowTest"/>
+        </classes>
+    </test>
+</suite>
+
+<!--<suite name="Suite" parallel="none" thread-count="1">
+ 	<test name="Assessment Flow Test">
+		<groups>
+			<run>
+				<include name="e2e" />
+				
+			</run>
+		</groups>
+		
+		<classes>
+		<class name="com.mpro.ptax.projectFlow.NewAssessmentFlow1"></class>
+			
+		</classes>
+	</test>
+</suite>-->

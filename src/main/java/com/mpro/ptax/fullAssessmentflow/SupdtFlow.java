@@ -4,7 +4,7 @@ import com.mpro.ptax.Utils.CredentialUtil;
 import com.mpro.ptax.base.BasePage;
 import com.mpro.ptax.components.GlobalButtons;
 import com.mpro.ptax.enums.UserRole;
-import com.mpro.ptax.pageobject.Supdt;
+import com.mpro.ptax.pageobject.Assessment.Supdt;
 import com.mpro.ptax.pages.auth.Login;
 
 public class SupdtFlow{
@@ -25,9 +25,10 @@ public class SupdtFlow{
 	        basepage.waitForLoaderToDisappear();
 	        globalbuttons.clickcrossIcon();
 	        basepage.scrollDown();
-	        basepage.selectLatestInward();
-	        supdt.openSupdt();       
-			
+	        basepage.selectLatestInwardO();
+	        supdt.openSupdt();   
 	    }
+	        
+	    
 	}
 

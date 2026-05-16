@@ -1,6 +1,8 @@
 package com.mpro.ptax.driver;
 
 import org.openqa.selenium.UnexpectedAlertBehaviour;
+import com.epam.healenium.SelfHealingDriver;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -13,39 +15,46 @@ public final class DriverManager {
 	        // Prevent object creation
 	    }
 
+//	    public static void initDriver() {
+//	        driver.set(new ChromeDriver());   // or your browser
+//	    }
+	    
 	    public static void initDriver() {
-	        if (driver.get() == null) { 
-	        	
-	        	ChromeOptions options = new ChromeOptions();
+	    	 if (driver.get() == null) {
 
-	        	options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
-	            // Accept insecure certificates (important for 8443 UAT)
-	            options.setAcceptInsecureCerts(true);
+	    	        ChromeOptions options = new ChromeOptions();
 
-	            // Ignore SSL errors
-	            options.addArguments("--ignore-certificate-errors");
-
-	            // Optional but recommended for Angular apps
-	            options.addArguments("--start-maximized");
-	            driver.set(new ChromeDriver());
-	           
-	        }
+	    	        options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
+	    	        options.setAcceptInsecureCerts(true);
+	    	        options.addArguments("--ignore-certificate-errors");
+	    	        options.addArguments("--start-maximized");
+	    	        
+//	    	        WebDriver delegate = new ChromeDriver(options);
+//
+//	    	        // 2. Wrap with Healenium
+//	    	        SelfHealingDriver healingDriver = SelfHealingDriver.create(delegate);
+//
+//	    	        // 3. Store in ThreadLocal
+//	    	        driver.set(healingDriver);
+	    	        driver.set(new ChromeDriver(options));
+	    	    }
 	    }
 
 	    public static WebDriver getDriver() {
-	        if (driver.get() == null) {
+	    	WebDriver drv = driver.get();
+	        if (drv == null) {
 	            throw new RuntimeException(
-	                "WebDriver is NULL. Did you forget to call DriverManager.initDriver()?"
+	                "WebDriver is NULL on Thread: " + Thread.currentThread().getId()
 	            );
 	        }
-	        return driver.get();
+	        return drv;
 	    }
-}
-//	    public static void quitDriver() {
-//	        if (driver.get() != null) {
-//	            driver.get().quit();
-//	            driver.remove();
-//	        }
-//	    }
-//	}
+
+	    public static void quitDriver() {
+	        if (driver.get() != null) {
+	            driver.get().quit();
+	            driver.remove();
+	        }
+	    }
+	}
 	

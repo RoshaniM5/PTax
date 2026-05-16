@@ -25,6 +25,7 @@ public class WIDataProvider {
 	        return data.iterator();
 	    }
 
+	    
 	    @DataProvider(name = "WIFlatDataProvider")   // ← ADD THIS
 	    public static Iterator<Object[]> getWIFlatData() {
 
