@@ -9,6 +9,27 @@ pipeline {
             }
         }
 
+        stage('Check Workspace') {
+            steps {
+                bat '''
+                    echo Current Directory:
+                    cd
+
+                    echo.
+                    echo Workspace Files:
+                    dir
+
+                    echo.
+                    echo Checking pom.xml:
+                    if exist pom.xml (
+                        echo pom.xml FOUND
+                    ) else (
+                        echo pom.xml NOT FOUND
+                    )
+                '''
+            }
+        }
+
         stage('Run Selenium Pipeline') {
             steps {
                 bat 'mvn clean test'
@@ -18,16 +39,11 @@ pipeline {
 
     post {
         always {
-            echo "Automation execution completed"
-        }
-    }
-}
-
-    post {
-        always {
+            echo "======================================"
             echo "BUILD RESULT = ${currentBuild.currentResult}"
             echo "BUILD NUMBER = ${BUILD_NUMBER}"
             echo "Sending Jenkins email..."
+            echo "======================================"
 
             emailext(
                 to: 'roshanimulunde@gmail.com',
@@ -43,6 +59,9 @@ Jenkins Build:
 ${BUILD_URL}
 
 Please check Jenkins for TestNG results and screenshots.
+
+Build Number : ${BUILD_NUMBER}
+Build Status : ${currentBuild.currentResult}
 """,
                 attachLog: true
             )
@@ -51,3 +70,4 @@ Please check Jenkins for TestNG results and screenshots.
         }
     }
 }
+
