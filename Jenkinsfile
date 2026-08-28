@@ -3,41 +3,25 @@ pipeline {
 
     stages {
 
-        stage('Build & Test') {
+        stage('Checkout') {
             steps {
-                echo 'Running PTAX Selenium automation...'
-
-                catchError(
-                    buildResult: 'FAILURE',
-                    stageResult: 'FAILURE'
-                ) {
-                    bat 'mvn clean test'
-                }
+                git 'YOUR_GITHUB_REPOSITORY_URL'
             }
         }
 
-        stage('Publish TestNG Results') {
+        stage('Run Selenium Pipeline') {
             steps {
-                echo 'Publishing TestNG results...'
-
-                junit(
-                    testResults: '**/target/surefire-reports/*.xml',
-                    allowEmptyResults: true
-                )
-            }
-        }
-
-        stage('Archive Reports') {
-            steps {
-                echo 'Archiving reports and screenshots...'
-
-                archiveArtifacts(
-                    artifacts: '**/target/surefire-reports/**/*, **/target/screenshots/**/*',
-                    allowEmptyArchive: true
-                )
+                bat 'mvn clean test'
             }
         }
     }
+
+    post {
+        always {
+            echo "Automation execution completed"
+        }
+    }
+}
 
     post {
         always {
