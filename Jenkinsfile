@@ -53,6 +53,4 @@ post {
         echo 'Automation execution failed. Reports will still be published.'
     }
 }
-```
-
 }
