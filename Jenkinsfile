@@ -40,71 +40,30 @@ pipeline {
     }
 
     post {
-
         always {
-            echo 'Sending automation email...'
+            echo "BUILD RESULT = ${currentBuild.currentResult}"
+            echo "BUILD NUMBER = ${BUILD_NUMBER}"
+            echo "Sending Jenkins email..."
 
             emailext(
                 to: 'roshanimulunde@gmail.com',
-                subject: "PTAX Selenium Automation - ${currentBuild.currentResult} - Build #${BUILD_NUMBER}",
-                mimeType: 'text/html',
-                attachLog: true,
-
-                attachmentsPattern: '**/target/surefire-reports/*.xml, **/target/screenshots/**/*',
-
+                subject: "PTAX Automation - ${currentBuild.currentResult} - Build #${BUILD_NUMBER}",
                 body: """
-                    <html>
-                    <body>
+PTAX Selenium Automation Execution
 
-                    <h2>PTAX Selenium Automation Report</h2>
+Job       : ${JOB_NAME}
+Build     : #${BUILD_NUMBER}
+Status    : ${currentBuild.currentResult}
 
-                    <table border="1" cellpadding="8" cellspacing="0">
+Jenkins Build:
+${BUILD_URL}
 
-                        <tr>
-                            <td><b>Job Name</b></td>
-                            <td>${env.JOB_NAME}</td>
-                        </tr>
-
-                        <tr>
-                            <td><b>Build Number</b></td>
-                            <td>#${env.BUILD_NUMBER}</td>
-                        </tr>
-
-                        <tr>
-                            <td><b>Status</b></td>
-                            <td>${currentBuild.currentResult}</td>
-                        </tr>
-
-                    </table>
-
-                    <br>
-
-                    <p>
-                        Selenium/TestNG automation execution has completed.
-                    </p>
-
-                    <p>
-                        <a href="${env.BUILD_URL}">
-                            Open Jenkins Build
-                        </a>
-                    </p>
-
-                    <p>
-                        TestNG results and screenshots are attached where available.
-                    </p>
-
-                    </body>
-                    </html>
-                """
+Please check Jenkins for TestNG results and screenshots.
+""",
+                attachLog: true
             )
-        }
 
-        success {
-            echo 'Automation completed successfully and email was sent.'
-        }
-
-        failure {
-            echo 'Automation failed, but email and reports were processed.'
+            echo "Email step completed."
         }
     }
 }
