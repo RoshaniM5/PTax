@@ -1,23 +1,58 @@
 pipeline {
-    agent any
+agent any
 
-    tools {
-    jdk 'JDK-17'
-    maven 'Maven3'
-}
+```
+stages {
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+    stage('Build & Test') {
+        steps {
+            echo 'Running PTAX Selenium automation...'
 
-        stage('Build & Test') {
-            steps {
+            catchError(
+                buildResult: 'FAILURE',
+                stageResult: 'FAILURE'
+            ) {
                 bat 'mvn clean test'
             }
         }
     }
+
+    stage('Publish TestNG Results') {
+        steps {
+            echo 'Publishing TestNG results...'
+
+            junit(
+                testResults: '**/target/surefire-reports/*.xml',
+                allowEmptyResults: true
+            )
+        }
+    }
+
+    stage('Archive Reports') {
+        steps {
+            echo 'Archiving reports and screenshots...'
+
+            archiveArtifacts(
+                artifacts: '**/target/surefire-reports/**/*, **/target/screenshots/**/*',
+                allowEmptyArchive: true
+            )
+        }
+    }
 }
-// trigger build
+
+post {
+    always {
+        echo 'Automation execution completed.'
+    }
+
+    success {
+        echo 'Automation execution completed successfully.'
+    }
+
+    failure {
+        echo 'Automation execution failed. Reports will still be published.'
+    }
+}
+```
+
+}
