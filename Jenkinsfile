@@ -7,26 +7,35 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/RoshaniM5/PTax.git'
+                git branch: 'main',
+                    url: 'https://github.com/RoshaniM5/PTax.git'
             }
         }
 
         stage('Check Workspace') {
             steps {
                 bat '''
-                    echo Current Directory:
+                    echo ======================================
+                    echo Current Directory
+                    echo ======================================
                     cd
 
                     echo.
-                    echo Workspace Files:
+                    echo ======================================
+                    echo Workspace Files
+                    echo ======================================
                     dir
 
                     echo.
-                    echo Checking pom.xml:
+                    echo ======================================
+                    echo Checking pom.xml
+                    echo ======================================
+
                     if exist pom.xml (
                         echo pom.xml FOUND
                     ) else (
                         echo pom.xml NOT FOUND
+                        exit /b 1
                     )
                 '''
             }
@@ -47,13 +56,21 @@ pipeline {
             echo "Publishing Allure Report"
             echo "======================================"
 
-            allure([
-                includeProperties: false,
-                jdk: '',
-                results: [
-                    [path: 'allure-results']
-                ]
-            ])
+            script {
+                if (fileExists('allure-results')) {
+
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        results: [
+                            [path: 'allure-results']
+                        ]
+                    ])
+
+                } else {
+                    echo "allure-results folder not found. Skipping Allure report."
+                }
+            }
 
             echo "======================================"
             echo "BUILD RESULT = ${currentBuild.currentResult}"
@@ -105,5 +122,18 @@ Build Status : ${currentBuild.currentResult}
 
             echo "Email step completed."
         }
+
+        success {
+            echo "======================================"
+            echo "Selenium Automation PASSED"
+            echo "======================================"
+        }
+
+        failure {
+            echo "======================================"
+            echo "Selenium Automation FAILED"
+            echo "======================================"
+        }
     }
 }
+```
