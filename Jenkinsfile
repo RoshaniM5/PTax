@@ -42,7 +42,7 @@ Jenkins
 
         failure {
             emailext(
-                to: 'akshayalshi10@gmail.com',
+                to: 'roshanimulunde0@gmail.com',
                 subject: "FAILED: Jenkins Build #${BUILD_NUMBER}",
                 body: """
 Hello Team,
