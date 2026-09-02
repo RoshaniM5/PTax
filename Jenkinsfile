@@ -1,3 +1,4 @@
+```groovy
 pipeline {
     agent any
 
@@ -5,7 +6,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'YOUR_GITHUB_REPOSITORY_URL'
+                git 'https://github.com/RoshaniM5/PTax.git'
             }
         }
 
@@ -35,10 +36,21 @@ pipeline {
                 bat 'mvn clean test'
             }
         }
+
+        stage('Publish Allure Report') {
+            steps {
+                allure([
+                    includeProperties: false,
+                    jdk: '',
+                    results: [[path: 'target/allure-results']]
+                ])
+            }
+        }
     }
 
     post {
         always {
+
             echo "======================================"
             echo "BUILD RESULT = ${currentBuild.currentResult}"
             echo "BUILD NUMBER = ${BUILD_NUMBER}"
@@ -47,7 +59,9 @@ pipeline {
 
             emailext(
                 to: 'roshanimulunde@gmail.com',
+
                 subject: "PTAX Automation - ${currentBuild.currentResult} - Build #${BUILD_NUMBER}",
+
                 body: """
 PTAX Selenium Automation Execution
 
@@ -55,14 +69,32 @@ Job       : ${JOB_NAME}
 Build     : #${BUILD_NUMBER}
 Status    : ${currentBuild.currentResult}
 
-Jenkins Build:
+========================================
+JENKINS BUILD
+========================================
+
 ${BUILD_URL}
 
-Please check Jenkins for TestNG results and screenshots.
+========================================
+ALLURE REPORT
+========================================
+
+${BUILD_URL}allure/
+
+Please open the Allure Report link above to view:
+- Passed tests
+- Failed tests
+- Skipped tests
+- Test execution details
+- Screenshots
+- Error details
 
 Build Number : ${BUILD_NUMBER}
 Build Status : ${currentBuild.currentResult}
+
+========================================
 """,
+
                 attachLog: true
             )
 
@@ -70,4 +102,4 @@ Build Status : ${currentBuild.currentResult}
         }
     }
 }
-
+```
