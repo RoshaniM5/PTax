@@ -1,5 +1,6 @@
 ```groovy
 pipeline {
+
     agent any
 
     stages {
@@ -36,20 +37,23 @@ pipeline {
                 bat 'mvn clean test'
             }
         }
-
-        stage('Publish Allure Report') {
-            steps {
-                allure([
-                    includeProperties: false,
-                    jdk: '',
-                    results: [[path: 'target/allure-results']]
-                ])
-            }
-        }
     }
 
     post {
+
         always {
+
+            echo "======================================"
+            echo "Publishing Allure Report"
+            echo "======================================"
+
+            allure([
+                includeProperties: false,
+                jdk: '',
+                results: [
+                    [path: 'allure-results']
+                ]
+            ])
 
             echo "======================================"
             echo "BUILD RESULT = ${currentBuild.currentResult}"
@@ -82,6 +86,7 @@ ALLURE REPORT
 ${BUILD_URL}allure/
 
 Please open the Allure Report link above to view:
+
 - Passed tests
 - Failed tests
 - Skipped tests
@@ -102,4 +107,3 @@ Build Status : ${currentBuild.currentResult}
         }
     }
 }
-```
